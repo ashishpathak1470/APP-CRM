@@ -7,13 +7,16 @@ const router = express.Router();
 
 module.exports = function(redisClient) {
   router.post("/customer", async (req, res) => {
-    const { name, email } = req.body;
-    if (!name || !email) {
+    const { name, email,lastvisit,totalspends,totalvisits } = req.body;
+    if (!name || !email || !totalspends || !totalvisits || !lastvisit) {
       return res.status(400).json({ error: "Invalid data" });
     }
     const customer = new Customer({
       name,
       email,
+      totalspends,
+      lastvisit,
+      totalvisits
     });
 
     try {
@@ -24,7 +27,7 @@ module.exports = function(redisClient) {
       if (error.code === 11000) {
         return res.status(400).json({ error: "Email already exists" });
       }
-      console.error("Error saving customer data:", error.stack);  // Log error stack
+      console.error("Error saving customer data:", error.stack);
       res.status(500).json({ error: "Internal server error" });
     }
   });

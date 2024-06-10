@@ -11,12 +11,13 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import Login from "./components/Login.jsx";
-
+import AudienceForm from "./components/AudienceForm.jsx";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route path="" element={<Home />} />
       <Route path="login" element={<Login/>} />
+      <Route path="audience" element={<AudienceForm />} />
     </Route>
   )
 );

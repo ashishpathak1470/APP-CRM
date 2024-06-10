@@ -1,9 +1,12 @@
-import React, { useEffect } from "react";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const clientId = "751320634084-347l3i08eao8c601d7bqn36g091b4b3f.apps.googleusercontent.com";
 
 const Login = ({ onLogin, onLogout, user = null }) => {
+  const navigate = useNavigate();
+
   useEffect(() => {
     const initializeGSI = () => {
       if (window.google) {
@@ -25,13 +28,14 @@ const Login = ({ onLogin, onLogout, user = null }) => {
           token: response.credential,
         });
         onLogin(res.data);
+        navigate('/audience');
       } catch (error) {
         console.error(error);
       }
     };
 
     initializeGSI();
-  }, [onLogin]);
+  }, [onLogin, navigate]);
 
   const handleLogout = async () => {
     try {
@@ -57,7 +61,7 @@ const Login = ({ onLogin, onLogout, user = null }) => {
               <button onClick={handleLogout}>Logout</button>
             </div>
           ) : (
-            <div id="google-signin-button"></div>
+            <Link to="/audience"><div id="google-signin-button"></div></Link>
           )}
         </div>
       </div>

@@ -10,7 +10,20 @@ const customerSchema = new Schema({
     type: String,
     required: true,
     unique: true
+  },
+  totalspends: {
+    type: Number,
+    default: 0
+  },
+  lastvisit: {
+    type: Date,
+    default: Date.now()
+  },
+  totalvisits: {
+    type: Number,
+    default: 0
   }
+
 });
 
 const Customer = mongoose.model('Customer', customerSchema);
