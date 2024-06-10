@@ -82,7 +82,6 @@ const AudienceForm = () => {
   };
 
   const navigateToCampaignsPage = () => {
-    // This is a placeholder. Replace it with your actual navigation logic.
     window.location.href = '/campaigns';
   };
 

@@ -4,7 +4,7 @@ const Customer = require("../models/customer");
 const Order = require("../models/order");
 const CommunicationLog = require("../models/communicationLog");
 const router = express.Router();
-
+const axios = require("axios");
 
 const buildQuery = (filters) => {
   let query = {};
@@ -58,13 +58,21 @@ module.exports = function (redisClient) {
     try {
       const existingCustomer = await Customer.findOne({ email }).exec();
       if (existingCustomer && existingCustomer.totalvisits === totalvisits) {
-        return res.status(400).json({ error: "Customer with the same email cannot have the same total visits increment it Please !!" });
+        return res
+          .status(400)
+          .json({
+            error:
+              "Customer with the same email cannot have the same total visits increment it Please !!",
+          });
       }
 
       if (existingCustomer) {
         existingCustomer.totalvisits = totalvisits;
         await existingCustomer.save();
-        await redisClient.publish("customer_channel", JSON.stringify(existingCustomer));
+        await redisClient.publish(
+          "customer_channel",
+          JSON.stringify(existingCustomer)
+        );
         return res.status(200).json({ message: "Customer data received" });
       }
 
@@ -131,44 +139,93 @@ module.exports = function (redisClient) {
     }
   });
 
-
-
   router.post("/audience/save", async (req, res) => {
     const { filters } = req.body;
-    console.log('Saving audience with filters:', filters); 
-  
+    console.log("Saving audience with filters:", filters);
+
     try {
       const query = buildQuery(filters);
       const audienceMembers = await Customer.find(query).exec();
-      console.log('Found audience members:', audienceMembers); 
-  
+      console.log("Found audience members:", audienceMembers);
+
       const communicationLog = new CommunicationLog({
         audienceFilters: filters,
         audienceSize: audienceMembers.length,
-        audienceMembers: audienceMembers.map(member => member._id),
+        audienceMembers: audienceMembers.map((member) => member._id),
+        campaignDetails: {},
       });
-  
+
       await communicationLog.save();
+
+      await sendPersonalizedMessages(audienceMembers);
+
       res.status(200).json({ message: "Audience saved successfully" });
     } catch (error) {
       console.error("Error saving audience:", error.stack);
       res.status(500).json({ error: "Internal server error" });
     }
   });
-  
+
+  const sendPersonalizedMessages = async (audienceMembers) => {
+    for (const member of audienceMembers) {
+      try {
+        const response = await axios.post("http://localhost:3001/send", {
+          message: `Hi ${member.name}, here is 10% off on your next order`,
+          customerId: member._id,
+        });
+
+        if (response.status >= 200 && response.status < 300) {
+          await updateDeliveryStatus(member._id, "SENT");
+        } else {
+          throw new Error("Failed to send message");
+        }
+      } catch (error) {
+        console.error("Error sending message to", member.name, error);
+        await updateDeliveryStatus(member._id, "FAILED");
+      }
+    }
+  };
 
   router.post("/audience/size", async (req, res) => {
     const { filters } = req.body;
-    console.log('Checking audience size with filters:', filters); // Debugging statement
+    console.log("Checking audience size with filters:", filters);
 
     try {
       const query = buildQuery(filters);
       const audienceSize = await Customer.countDocuments(query).exec();
-      console.log('Calculated audience size:', audienceSize); // Debugging statement
+      console.log("Calculated audience size:", audienceSize);
 
       res.status(200).json({ size: audienceSize });
     } catch (error) {
       console.error("Error getting audience size:", error.stack);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  router.post("/delivery-receipt", async (req, res) => {
+    const { communicationLogId, status } = req.body;
+
+    try {
+      await updateDeliveryStatus(communicationLogId, status);
+      res.status(200).json({ message: "Delivery status updated successfully" });
+    } catch (error) {
+      console.error("Error updating delivery status:", error.stack);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  const updateDeliveryStatus = async (communicationLogId, status) => {
+    await CommunicationLog.findByIdAndUpdate(communicationLogId, {
+      status,
+    }).exec();
+  };
+
+  router.get("/campaigns", async (req, res) => {
+    try {
+      const campaigns = await CommunicationLog.find().exec();
+      res.status(200).json({ campaigns });
+    } catch (error) {
+      console.error("Error fetching campaigns:", error.stack);
       res.status(500).json({ error: "Internal server error" });
     }
   });
