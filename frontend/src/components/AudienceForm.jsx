@@ -3,13 +3,13 @@ import axios from 'axios';
 
 const AudienceForm = () => {
   const [filters, setFilters] = useState([
-    { field: 'totalSpends', operator: 'greater_than', value: 10000, logic: 'AND' },
+    { field: '', operator: '', value: 0, logic: 'AND' },
   ]);
   const [operators] = useState([
-    { value: 'greater_than', label: 'Greater Than' },
-    { value: 'less_than', label: 'Less Than' },
-    { value: 'greater_than_or_equal_to', label: 'Greater Than or Equal To' },
-    { value: 'less_than_or_equal_to', label: 'Less Than or Equal To' },
+    { value: 'greater_then', label: 'Greater Then' },
+    { value: 'less_then', label: 'Less Than' },
+    { value: 'greater_then_or_equal_to', label: 'Greater Then or Equal To' },
+    { value: 'less_then_or_equal_to', label: 'Less Then or Equal To' },
     { value: 'equal_to', label: 'Equal To' },
     { value: 'not_equal_to', label: 'Not Equal To' },
   ]);
@@ -53,8 +53,12 @@ const AudienceForm = () => {
       alert('All fields must be filled out.');
       return;
     }
+
+    console.log('Sending filters to API:', filters);
+
     try {
-      const response = await axios.post('/api/audience/size', { filters });
+      const response = await axios.post('http://localhost:3000/api/audience/size', { filters });
+      console.log('API response:', response);
       setAudienceSize(response.data.size);
     } catch (error) {
       console.error('Error checking audience size:', error);
@@ -66,8 +70,11 @@ const AudienceForm = () => {
       alert('All fields must be filled out.');
       return;
     }
+
+    console.log('Saving filters to API:', filters);
+
     try {
-      await axios.post('/api/audience/save', { filters });
+      await axios.post('http://localhost:3000/api/audience/save', { filters });
       navigateToCampaignsPage();
     } catch (error) {
       console.error('Error saving audience:', error);
@@ -85,18 +92,6 @@ const AudienceForm = () => {
         <h2 className="text-3xl font-semibold mb-6">Create Audience</h2>
         {filters.map((filter, index) => (
           <React.Fragment key={index}>
-            {index !== 0 && (
-              <div className="mb-6 flex justify-center">
-                <select
-                  value={filters[index - 1].logic}
-                  onChange={(e) => handleLogicChange(index - 1, e)}
-                  className="p-4 border rounded text-lg"
-                >
-                  <option value="AND">AND</option>
-                  <option value="OR">OR</option>
-                </select>
-              </div>
-            )}
             <div className="mb-6 flex items-center">
               <div className="flex-1 mr-4">
                 <select
@@ -106,10 +101,8 @@ const AudienceForm = () => {
                   className="p-4 border rounded w-full text-lg"
                 >
                   <option value="">Select Field</option>
-                  <option value="totalSpends">Total Spends</option>
-                  <option value="maxVisits">Max Visits</option>
-                  <option value="lastVisited">Not Visited Last Months</option>
-                  {/* Add more options as needed */}
+                  <option value="totalspends">Total Spends</option>
+                  <option value="totalvisits">Max Visits</option>
                 </select>
               </div>
               <div className="flex-1 mr-4">

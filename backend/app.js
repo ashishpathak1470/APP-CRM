@@ -58,12 +58,12 @@ app.use((req, res, next) => {
 });
 
 const authRoutes = require("./routes/auth");
-const apiRoutes = require("./routes/api")(redisClient); // Pass the redisClient to apiRoutes
+const apiRoutes = require("./routes/api")(redisClient);
 app.use("/api", apiRoutes);
 app.use("/auth", authRoutes);
 
 app.get('/', (req, res) => {
-  res.send('Test route is working');
+  res.send('Welcome to the CRM Server');
 });
 
 const PORT = process.env.PORT || 3000;

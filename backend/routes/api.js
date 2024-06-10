@@ -2,33 +2,86 @@ const express = require("express");
 const mongoose = require("mongoose");
 const Customer = require("../models/customer");
 const Order = require("../models/order");
-
+const CommunicationLog = require("../models/communicationLog");
 const router = express.Router();
 
-module.exports = function(redisClient) {
+
+const buildQuery = (filters) => {
+  let query = {};
+
+  filters.forEach((filter, index) => {
+    const { field, operator, value, logic } = filter;
+
+    let condition = {};
+    switch (operator) {
+      case "greater_then":
+        condition[field] = { $gt: value };
+        break;
+      case "less_then":
+        condition[field] = { $lt: value };
+        break;
+      case "greater_then_or_equal_to":
+        condition[field] = { $gte: value };
+        break;
+      case "less_then_or_equal_to":
+        condition[field] = { $lte: value };
+        break;
+      case "equal_to":
+        condition[field] = value;
+        break;
+      case "not_equal_to":
+        condition[field] = { $ne: value };
+        break;
+    }
+
+    if (index === 0) {
+      query = condition;
+    } else {
+      if (logic === "AND") {
+        query = { $and: [...(query.$and || [query]), condition] };
+      } else if (logic === "OR") {
+        query = { $or: [...(query.$or || [query]), condition] };
+      }
+    }
+  });
+
+  return query;
+};
+
+module.exports = function (redisClient) {
   router.post("/customer", async (req, res) => {
-    const { name, email,lastvisit,totalspends,totalvisits } = req.body;
+    const { name, email, lastvisit, totalspends, totalvisits } = req.body;
     if (!name || !email || !totalspends || !totalvisits || !lastvisit) {
       return res.status(400).json({ error: "Invalid data" });
     }
-    const customer = new Customer({
-      name,
-      email,
-      totalspends,
-      lastvisit,
-      totalvisits
-    });
 
     try {
+      const existingCustomer = await Customer.findOne({ email }).exec();
+      if (existingCustomer && existingCustomer.totalvisits === totalvisits) {
+        return res.status(400).json({ error: "Customer with the same email cannot have the same total visits increment it Please !!" });
+      }
+
+      if (existingCustomer) {
+        existingCustomer.totalvisits = totalvisits;
+        await existingCustomer.save();
+        await redisClient.publish("customer_channel", JSON.stringify(existingCustomer));
+        return res.status(200).json({ message: "Customer data received" });
+      }
+
+      const customer = new Customer({
+        name,
+        email,
+        totalspends,
+        lastvisit,
+        totalvisits,
+      });
+
       await customer.save();
       await redisClient.publish("customer_channel", JSON.stringify(customer));
-      res.status(200).json({ message: "Customer data received" });
+      return res.status(200).json({ message: "Customer data received" });
     } catch (error) {
-      if (error.code === 11000) {
-        return res.status(400).json({ error: "Email already exists" });
-      }
       console.error("Error saving customer data:", error.stack);
-      res.status(500).json({ error: "Internal server error" });
+      return res.status(500).json({ error: "Internal server error" });
     }
   });
 
@@ -52,7 +105,7 @@ module.exports = function(redisClient) {
       await redisClient.publish("order_channel", JSON.stringify(order));
       res.status(200).json({ message: "Order data received" });
     } catch (error) {
-      console.error("Error saving order data:", error.stack);  // Log error stack
+      console.error("Error saving order data:", error.stack);
       res.status(500).json({ error: "Internal server error" });
     }
   });
@@ -67,11 +120,55 @@ module.exports = function(redisClient) {
     try {
       const orders = await Order.find({ customerId }).exec();
       if (!orders) {
-        return res.status(404).json({ error: "No orders found for this customer" });
+        return res
+          .status(404)
+          .json({ error: "No orders found for this customer" });
       }
       res.status(200).json({ orders });
     } catch (error) {
-      console.error("Error fetching orders:", error.stack);  // Log error stack
+      console.error("Error fetching orders:", error.stack);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+
+
+  router.post("/audience/save", async (req, res) => {
+    const { filters } = req.body;
+    console.log('Saving audience with filters:', filters); 
+  
+    try {
+      const query = buildQuery(filters);
+      const audienceMembers = await Customer.find(query).exec();
+      console.log('Found audience members:', audienceMembers); 
+  
+      const communicationLog = new CommunicationLog({
+        audienceFilters: filters,
+        audienceSize: audienceMembers.length,
+        audienceMembers: audienceMembers.map(member => member._id),
+      });
+  
+      await communicationLog.save();
+      res.status(200).json({ message: "Audience saved successfully" });
+    } catch (error) {
+      console.error("Error saving audience:", error.stack);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+
+  router.post("/audience/size", async (req, res) => {
+    const { filters } = req.body;
+    console.log('Checking audience size with filters:', filters); // Debugging statement
+
+    try {
+      const query = buildQuery(filters);
+      const audienceSize = await Customer.countDocuments(query).exec();
+      console.log('Calculated audience size:', audienceSize); // Debugging statement
+
+      res.status(200).json({ size: audienceSize });
+    } catch (error) {
+      console.error("Error getting audience size:", error.stack);
       res.status(500).json({ error: "Internal server error" });
     }
   });
