@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const AudienceForm = () => {
   const [filters, setFilters] = useState([
@@ -85,7 +85,7 @@ const AudienceForm = () => {
         "https://crm-server-1-rfg3.onrender.com/api/audience/save",
         { filters }
       );
-      navigate("/campaigns");
+      Navigate("/campaigns");
     } catch (error) {
       console.error("Error saving audience:", error);
     }
