@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const AudienceForm = () => {
   const [filters, setFilters] = useState([
@@ -80,7 +81,10 @@ const AudienceForm = () => {
     console.log("Saving filters to API:", filters);
 
     try {
-      await axios.post("https://crm-server-1-rfg3.onrender.com/api/audience/save", { filters });
+      await axios.post(
+        "https://crm-server-1-rfg3.onrender.com/api/audience/save",
+        { filters }
+      );
       navigateToCampaignsPage();
     } catch (error) {
       console.error("Error saving audience:", error);
@@ -165,12 +169,14 @@ const AudienceForm = () => {
           <p className="text-xl sm:text-2xl">Audience Size: {audienceSize}</p>
         </div>
         <div className="mb-6 flex justify-center">
-          <button
-            onClick={handleSaveAudience}
-            className="bg-blue-500 text-white py-2 px-4 sm:py-3 sm:px-6 rounded hover:bg-blue-600 text-base sm:text-lg"
-          >
-            Save Audience and Go to Campaigns
-          </button>
+          <Link to="/campaigns">
+            <button
+              onClick={handleSaveAudience}
+              className="bg-blue-500 text-white py-2 px-4 sm:py-3 sm:px-6 rounded hover:bg-blue-600 text-base sm:text-lg"
+            >
+              Save Audience and Go to Campaigns
+            </button>
+          </Link>
         </div>
       </div>
     </div>
