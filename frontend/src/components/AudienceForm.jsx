@@ -87,7 +87,7 @@ const AudienceForm = () => {
         "https://crm-server-1-rfg3.onrender.com/api/audience/save",
         { filters }
       );
-      navigate("/campaigns");
+      // navigate("/campaigns");
     } catch (error) {
       console.error("Error saving audience:", error);
     }
