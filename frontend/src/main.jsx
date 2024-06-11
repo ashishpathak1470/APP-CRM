@@ -1,4 +1,3 @@
-
 import React from "react";
 import ReactDOM from "react-dom/client";
 import Layout from "./Layout.jsx";
@@ -10,14 +9,14 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
 } from "react-router-dom";
-import Login from "./components/Login.jsx";
 import AudienceForm from "./components/AudienceForm.jsx";
 import Campaigns from "./components/Campaigns.jsx";
+import { Auth0Provider } from "@auth0/auth0-react";
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />}>
       <Route path="" element={<Home />} />
-      <Route path="login" element={<Login/>} />
       <Route path="audience" element={<AudienceForm />} />
       <Route path="campaigns" element={<Campaigns />} />
     </Route>
@@ -26,6 +25,15 @@ const router = createBrowserRouter(
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Auth0Provider
+    domain="dev-n6d6jp0fgijakf5v.us.auth0.com"
+    clientId="ESQk6f5IqQRiAtqUvXSMFrD51xidSKrm"
+    cacheLocation="localstorage"
+    authorizationParams={{
+      redirect_uri: "http://localhost:5173/audience",
+    }}
+    >
+      <RouterProvider router={router} />
+    </Auth0Provider>
   </React.StrictMode>
 );

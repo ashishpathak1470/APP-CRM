@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const session = require("express-session");
-const passport = require("passport");
 const cors = require("cors");
 const redis = require('redis');
 
@@ -41,9 +40,6 @@ app.use(
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
-
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -57,10 +53,8 @@ app.use((req, res, next) => {
   next();
 });
 
-const authRoutes = require("./routes/auth");
 const apiRoutes = require("./routes/api")(redisClient);
 app.use("/api", apiRoutes);
-app.use("/auth", authRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the CRM Server');
