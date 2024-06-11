@@ -6,13 +6,15 @@ const session = require("express-session");
 const cors = require("cors");
 const redis = require('redis');
 
+const PORT = process.env.PORT || 3000;
+
 dotenv.config();
 
 const app = express();
 app.use(bodyParser.json());
 
 mongoose
-  .connect(process.env.MONGODB_URI, {
+  .connect('mongodb+srv://ashishpathak1470:pathak@cluster0.f6z2ikp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -60,7 +62,6 @@ app.get('/', (req, res) => {
   res.send('Welcome to the CRM Server');
 });
 
-const PORT = process.env.PORT || 4000;
 app.listen(PORT, (err) => {
   if (err) {
     console.error("Error starting server:", err);
