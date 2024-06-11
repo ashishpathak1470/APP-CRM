@@ -36,13 +36,6 @@ const AudienceForm = () => {
     setFilters(updatedFilters);
   };
 
-  const handleLogicChange = (index, e) => {
-    const { value } = e.target;
-    const updatedFilters = [...filters];
-    updatedFilters[index].logic = value;
-    setFilters(updatedFilters);
-  };
-
   const validateFilters = () => {
     for (let filter of filters) {
       if (!filter.field || !filter.operator || filter.value === "") {
