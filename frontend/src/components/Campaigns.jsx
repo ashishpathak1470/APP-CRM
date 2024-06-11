@@ -10,7 +10,7 @@ const Campaigns = () => {
 
   const fetchCampaigns = async () => {
     try {
-      const response = await axios.get("http://localhost:3000/api/campaigns");
+      const response = await axios.get("https://crm-server-1-rfg3.onrender.com/api/campaigns");
       setCampaigns(response.data.campaigns.reverse());
     } catch (error) {
       console.error("Error fetching campaigns:", error);

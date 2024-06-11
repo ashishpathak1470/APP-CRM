@@ -61,7 +61,7 @@ const AudienceForm = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/audience/size",
+        "https://crm-server-1-rfg3.onrender.com/api/audience/size",
         { filters }
       );
       console.log("API response:", response);
@@ -80,7 +80,7 @@ const AudienceForm = () => {
     console.log("Saving filters to API:", filters);
 
     try {
-      await axios.post("http://localhost:3000/api/audience/save", { filters });
+      await axios.post("https://crm-server-1-rfg3.onrender.com/api/audience/save", { filters });
       navigateToCampaignsPage();
     } catch (error) {
       console.error("Error saving audience:", error);
