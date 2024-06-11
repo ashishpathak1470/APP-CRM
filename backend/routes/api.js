@@ -141,9 +141,9 @@ module.exports = function (redisClient) {
     const { filters, campaignDetails } = req.body;
     console.log("Saving audience with filters:", filters);
 
-    if (!campaignDetails || !campaignDetails.campaignName) {
-      return res.status(400).json({ error: "Invalid or missing campaign details" });
-    }
+    // if (!campaignDetails || !campaignDetails.campaignName) {
+    //   return res.status(400).json({ error: "Invalid or missing campaign details" });
+    // }
 
     try {
       const query = buildQuery(filters);
