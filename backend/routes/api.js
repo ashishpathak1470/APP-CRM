@@ -58,12 +58,10 @@ module.exports = function (redisClient) {
     try {
       const existingCustomer = await Customer.findOne({ email }).exec();
       if (existingCustomer && existingCustomer.totalvisits === totalvisits) {
-        return res
-          .status(400)
-          .json({
-            error:
-              "Customer with the same email cannot have the same total visits increment it Please !!",
-          });
+        return res.status(400).json({
+          error:
+            "Customer with the same email cannot have the same total visits increment it Please !!",
+        });
       }
 
       if (existingCustomer) {

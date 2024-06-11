@@ -2,7 +2,7 @@ const redis = require("redis");
 const mongoose = require("mongoose");
 const Customer = require("../models/customer");
 const Order = require("../models/order");
-const CommunicationLog = require("../models/communicationLog"); 
+const CommunicationLog = require("../models/communicationLog");
 const dotenv = require("dotenv");
 
 dotenv.config();
@@ -19,7 +19,7 @@ mongoose
   .catch((err) => console.error("MongoDB connection error for consumer:", err));
 
 const batchQueue = [];
-const batchSize = 10; 
+const batchSize = 10;
 let timer;
 
 const handleCustomer = async (data) => {
@@ -42,7 +42,7 @@ const processBatch = async () => {
     if (batchQueue.length > 0) {
       await Promise.all(batchQueue.map(handleCommunicationLog));
       console.log(`Processed batch of ${batchQueue.length} messages`);
-      batchQueue.length = 0; 
+      batchQueue.length = 0;
     }
   } catch (error) {
     console.error("Error processing batch:", error);
@@ -72,4 +72,4 @@ redisClient.on("message", async (channel, message) => {
 
 redisClient.subscribe("customer_channel");
 redisClient.subscribe("order_channel");
-redisClient.subscribe("communication_log_channel"); 
+redisClient.subscribe("communication_log_channel");

@@ -26,12 +26,12 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Auth0Provider
-    domain="dev-n6d6jp0fgijakf5v.us.auth0.com"
-    clientId="ESQk6f5IqQRiAtqUvXSMFrD51xidSKrm"
-    cacheLocation="localstorage"
-    authorizationParams={{
-      redirect_uri: "http://localhost:5173/audience",
-    }}
+      domain="dev-n6d6jp0fgijakf5v.us.auth0.com"
+      clientId="ESQk6f5IqQRiAtqUvXSMFrD51xidSKrm"
+      cacheLocation="localstorage"
+      authorizationParams={{
+        redirect_uri: "http://localhost:5173/audience",
+      }}
     >
       <RouterProvider router={router} />
     </Auth0Provider>
