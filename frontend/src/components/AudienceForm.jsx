@@ -171,7 +171,7 @@ const AudienceForm = () => {
           <p className="text-xl sm:text-2xl">Audience Size: {audienceSize}</p>
         </div>
         <div className="mb-6 flex justify-center">
-          <Link>
+          <Link to="/campaigns">
             <button
               onClick={handleSaveAudience}
               className="bg-blue-500 text-white py-2 px-4 sm:py-3 sm:px-6 rounded hover:bg-blue-600 text-base sm:text-lg"
