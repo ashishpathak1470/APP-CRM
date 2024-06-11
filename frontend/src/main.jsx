@@ -30,7 +30,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       clientId="ESQk6f5IqQRiAtqUvXSMFrD51xidSKrm"
       cacheLocation="localstorage"
       authorizationParams={{
-        redirect_uri: "http://localhost:5173/audience",
+        redirect_uri: "https://app-crm-beta.vercel.app/audience",
       }}
     >
       <RouterProvider router={router} />
