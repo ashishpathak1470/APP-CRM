@@ -28,8 +28,13 @@ function Header() {
             <>
               <div className="flex items-center space-x-3 rtl:space-x-reverse">
                 <span className="text-white font-semibold">{user.name}</span>
-                <Link to="/audience" className="text-white font-semibold">
-                  Create Audience
+                <Link to="/audience">
+                  <button
+                    type="button"
+                    className="bg-orange-500 py-2 px-4 text-sm rounded-lg hover:bg-orange-600 shadow-2xl text-white hover:scale-95 font-semibold"
+                  >
+                    Create Audience
+                  </button>
                 </Link>
               </div>
               <button
