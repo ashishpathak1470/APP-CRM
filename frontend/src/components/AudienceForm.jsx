@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { navigate } from "react-router-dom";
+
 
 const AudienceForm = () => {
   const [filters, setFilters] = useState([
@@ -85,15 +87,15 @@ const AudienceForm = () => {
         "https://crm-server-1-rfg3.onrender.com/api/audience/save",
         { filters }
       );
-      navigateToCampaignsPage();
+      navigate("/campaigns");
     } catch (error) {
       console.error("Error saving audience:", error);
     }
   };
 
-  const navigateToCampaignsPage = () => {
-    window.location.href = "/campaigns";
-  };
+  // const navigateToCampaignsPage = () => {
+  //   window.location.href = "/campaigns";
+  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
@@ -169,7 +171,7 @@ const AudienceForm = () => {
           <p className="text-xl sm:text-2xl">Audience Size: {audienceSize}</p>
         </div>
         <div className="mb-6 flex justify-center">
-          <Link to="/campaigns">
+          <Link>
             <button
               onClick={handleSaveAudience}
               className="bg-blue-500 text-white py-2 px-4 sm:py-3 sm:px-6 rounded hover:bg-blue-600 text-base sm:text-lg"
