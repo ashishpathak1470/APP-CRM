@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import { navigate } from "react-router-dom";
-
 
 const AudienceForm = () => {
   const [filters, setFilters] = useState([
@@ -93,10 +91,6 @@ const AudienceForm = () => {
     }
   };
 
-  // const navigateToCampaignsPage = () => {
-  //   window.location.href = "/campaigns";
-  // };
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl w-full p-4 sm:p-8 bg-white rounded-lg shadow-lg">
@@ -171,14 +165,12 @@ const AudienceForm = () => {
           <p className="text-xl sm:text-2xl">Audience Size: {audienceSize}</p>
         </div>
         <div className="mb-6 flex justify-center">
-          <Link>
-            <button
-              onClick={handleSaveAudience}
-              className="bg-blue-500 text-white py-2 px-4 sm:py-3 sm:px-6 rounded hover:bg-blue-600 text-base sm:text-lg"
-            >
-              Save Audience and Go to Campaigns
-            </button>
-          </Link>
+          <button
+            onClick={handleSaveAudience}
+            className="bg-blue-500 text-white py-2 px-4 sm:py-3 sm:px-6 rounded hover:bg-blue-600 text-base sm:text-lg"
+          >
+            Save Audience and Go to Campaigns
+          </button>
         </div>
       </div>
     </div>
