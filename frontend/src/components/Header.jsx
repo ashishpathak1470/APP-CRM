@@ -1,9 +1,9 @@
+import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function Header() {
   const { user, loginWithRedirect, isAuthenticated, logout } = useAuth0();
-  console.log(user);
 
   return (
     <nav className="bg-indigo-800 border-gray-200 top-0 left-0 right-0 z-50 shadow-lg">
@@ -28,6 +28,9 @@ function Header() {
             <>
               <div className="flex items-center space-x-3 rtl:space-x-reverse">
                 <span className="text-white font-semibold">{user.name}</span>
+                <Link to="/audience" className="text-white font-semibold">
+                  Create Audience
+                </Link>
               </div>
               <button
                 onClick={() => logout({ returnTo: window.location.origin })}
